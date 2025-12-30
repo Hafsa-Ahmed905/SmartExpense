@@ -394,7 +394,12 @@ MigrationBackup/
 **/.ionide/
 
 # Fody - auto-generated XML schema
-FodyWeavers.xsd
+FodyWeavers.xsd  
+bin/
+obj/
+.vs/
+appsettings.Development.json
+
 
 # VS Code files for those working on multiple tools
 .vscode/*
