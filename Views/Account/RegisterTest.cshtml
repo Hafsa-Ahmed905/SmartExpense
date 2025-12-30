@@ -1,0 +1,45 @@
+@model FP.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Register Test";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Register Test</h2>
+
+<form method="post">
+    <div class="mb-3">
+        <label asp-for="FirstName">First Name:</label>
+        <input asp-for="FirstName" class="form-control" style="background: white; color: black; border: 1px solid black;" />
+        <span asp-validation-for="FirstName"></span>
+    </div>
+    
+    <div class="mb-3">
+        <label asp-for="LastName">Last Name:</label>
+        <input asp-for="LastName" class="form-control" style="background: white; color: black; border: 1px solid black;" />
+        <span asp-validation-for="LastName"></span>
+    </div>
+    
+    <div class="mb-3">
+        <label asp-for="Email">Email:</label>
+        <input asp-for="Email" type="email" class="form-control" style="background: white; color: black; border: 1px solid black;" />
+        <span asp-validation-for="Email"></span>
+    </div>
+    
+    <div class="mb-3">
+        <label asp-for="Password">Password:</label>
+        <input asp-for="Password" type="password" class="form-control" style="background: white; color: black; border: 1px solid black;" />
+        <span asp-validation-for="Password"></span>
+    </div>
+    
+    <div class="mb-3">
+        <label asp-for="ConfirmPassword">Confirm Password:</label>
+        <input asp-for="ConfirmPassword" type="password" class="form-control" style="background: white; color: black; border: 1px solid black;" />
+        <span asp-validation-for="ConfirmPassword"></span>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Register</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

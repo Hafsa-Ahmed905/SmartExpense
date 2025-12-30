@@ -1,0 +1,363 @@
+﻿
+@{
+    ViewData["Title"] = "About";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #1F2937;
+        }
+
+        .navbar {
+            background-color: #008080;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #20C997 !important;
+        }
+
+        .page-header {
+            background: url('/images/h3.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 0 60px;
+            text-align: center;
+            position: relative;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(80, 80, 80, 0.6);
+            backdrop-filter: blur(2px);
+            z-index: 1;
+        }
+
+        .page-header .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-header h1 {
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .about-content {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            margin-bottom: 40px;
+            font-weight: 700;
+            color: #008080;
+            position: relative;
+        }
+
+        .section-title:after {
+            display: none;
+        }
+
+        .text-center .section-title:after {
+            margin: 15px auto;
+        }
+
+        .mission-vision {
+            background-color: #F3F4F6;
+            padding: 80px 0;
+        }
+
+        .mission-card, .vision-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            height: 100%;
+            text-align: center;
+            border-top: 4px solid #008080;
+        }
+
+        .mission-icon, .vision-icon {
+            font-size: 3rem;
+            color: #008080;
+            margin-bottom: 20px;
+        }
+
+        .tech-section {
+            padding: 80px 0;
+            background-color: #F9FAFB;
+        }
+
+        .tech-icon-card {
+            padding: 25px;
+            border: 1px solid #E5E7EB;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s;
+            background-color: white;
+        }
+
+        .tech-icon-card i {
+            font-size: 3rem;
+            color: #008080;
+            margin-bottom: 10px;
+        }
+
+        .tech-icon-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        .values {
+            background-color: #F3F4F6;
+            padding: 80px 0;
+        }
+
+        .value-card {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+            text-align: center;
+            border-left: 4px solid #20C997;
+        }
+
+        .value-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .value-icon {
+            font-size: 2.5rem;
+            color: #008080;
+            margin-bottom: 20px;
+        }
+
+        .creator-note {
+            background-color: #008080;
+            color: white;
+            padding: 60px 0;
+        }
+
+        .creator-img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 5px solid #20C997;
+            margin-bottom: 20px;
+        }
+
+        .creator-name {
+            color: #20C997;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .cta {
+            background: linear-gradient(135deg, #008080, #20C997);
+            color: white;
+            text-align: center;
+            padding: 80px 0;
+        }
+
+        .cta .btn-light {
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 50px;
+            margin-top: 20px;
+            color: #008080;
+            transition: background-color 0.3s;
+        }
+
+        .cta .btn-light:hover {
+            background-color: #F3F4F6;
+        }
+
+        .footer {
+            background: #1F2937;
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer h5 {
+            margin-bottom: 20px;
+            color: #20C997;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #D1D5DB;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+    </style>
+}
+
+<div class="page-header">
+    <div class="container">
+        <h1 class="display-4">About SmartExpense</h1>
+        <p class="lead">Learn more about our mission to help you take control of your finances and achieve your goals.</p>
+    </div>
+</div>
+
+<section class="about-content">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="section-title">The Concept & Origin</h2>
+                <p>The <strong>SmartExpense</strong> project was conceived to demonstrate a modern, user-centric approach to personal financial management. The core issue addressed was the feeling that existing financial apps are often too cluttered or intimidating.</p>
+                <p>This application was developed with a clear mandate: to create an intuitive tool that helps users track expenses, set budgets, and understand their financial health without relying on complex, dense interfaces.</p>
+                <p>This entire platform represents a portfolio showcase of technical skills in web development, clean UI/UX design, and the application of core FinTech concepts to deliver a minimal, functional, and visually appealing experience.</p>
+            </div>
+            <div class="col-lg-6">
+                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Design Process" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mission-vision">
+    <div class="container">
+        <h2 class="section-title text-center">Our Design Philosophy & Vision</h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="mission-card">
+                    <div class="mission-icon"><i class="fas fa-bullseye"></i></div>
+                    <h3>Core Goal</h3>
+                    <p>To showcase how robust financial tracking and reporting can be achieved through minimalist design, empowering individuals to take control of their finances with confidence and clarity.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="vision-card">
+                    <div class="vision-icon"><i class="fas fa-eye"></i></div>
+                    <h3>Future Vision</h3>
+                    <p>To design a platform that could potentially evolve into the leading stress-free financial tool, where money management is simple, stress-free, and always accessible, setting a new standard for FinTech UX.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="values">
+    <div class="container">
+        <h2 class="section-title text-center">Our Project Values</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="value-card">
+                    <div class="value-icon"><i class="fas fa-user-shield"></i></div>
+                    <h4>Trust & Security</h4>
+                    <p>The architecture is designed to prioritize data integrity and security, demonstrating best practices for handling sensitive user information.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="value-card">
+                    <div class="value-icon"><i class="fas fa-lightbulb"></i></div>
+                    <h4>Innovation</h4>
+                    <p>The project utilizes modern frameworks and design patterns to ensure a high level of performance, responsiveness, and feature scalability.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="value-card">
+                    <div class="value-icon"><i class="fas fa-hand-holding-heart"></i></div>
+                    <h4>User-Centric</h4>
+                    <p>Every element, from navigation to data visualization, is built with the end-user in mind to create the most intuitive expense tracking flow possible.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="tech-section">
+    <div class="container">
+        <h2 class="section-title text-center">Core Technologies Used</h2>
+        <p class="text-center mb-5">This project was built to demonstrate proficiency in modern front-end web development standards and best practices.</p>
+        <div class="row g-4 justify-content-center">
+            <div class="col-6 col-md-3 col-lg-2">
+                <div class="tech-icon-card"><i class="fab fa-html5"></i><h6>HTML5</h6></div>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <div class="tech-icon-card"><i class="fab fa-css3-alt"></i><h6>CSS3</h6></div>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <div class="tech-icon-card"><i class="fab fa-bootstrap"></i><h6>Bootstrap 5</h6></div>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <div class="tech-icon-card"><i class="fab fa-js-square"></i><h6>JavaScript</h6></div>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <div class="tech-icon-card"><i class="fas fa-magic"></i><h6>UI/UX Design</h6></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="creator-note text-center">
+    <div class="container">
+        <img src="~/images/Me.jpeg" class="creator-img" alt="Project Creator Photo">
+        <p class="creator-name">Hafsa Ahmed</p>
+        <h3 class="mb-3">A Note from the Creator</h3>
+        <p class="lead" style="max-width: 700px; margin: 0 auto;">"Thank you for exploring the SmartExpense project. This was a valuable opportunity to merge my passion for Software Engineering with practical web development skills. Every detail, from the color scheme to the navigation, was chosen to reflect professional, real-world application standards."</p>
+    </div>
+</section>
+
+<section class="cta">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <h2 class="mb-4">Explore the SmartExpense Project</h2>
+                <p class="mb-4">Take a look at the features and design decisions that went into building this platform.</p>
+                <a asp-controller="Home" asp-action="Features" class="btn btn-light btn-lg px-5">View Features</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+}
+

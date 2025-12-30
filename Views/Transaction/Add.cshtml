@@ -1,0 +1,210 @@
+﻿@model FP.Models.Transaction
+@{
+    ViewData["Title"] = "Add Transaction";
+    Layout = "_Layout2";
+}
+
+@section Styles {
+    <style>
+        h2 {
+            color: #008080 !important;
+            font-weight: 700;
+        }
+        
+        .card-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #008080;
+            box-shadow: 0 0 0 0.2rem rgba(0, 128, 128, 0.25);
+        }
+
+        .btn-primary {
+            background-color: #008080;
+            border-color: #008080;
+        }
+        
+        .btn-primary:hover {
+            background-color: #006666;
+            border-color: #006666;
+        }
+        
+        .fluffy-mascot {
+        position: fixed;
+        bottom: 20px;
+        left: 250px;
+        width: 200px;
+        height: 200px;
+        z-index: 1000;
+        animation: none;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        transition: transform 0.3s ease;
+    }
+        
+    .fluffy-mascot:hover {
+        transform: scale(1.1) rotate(5deg);
+    }
+    </style>
+}
+
+<h2 class="mb-4">Add Transaction</h2>
+
+<div class="card-box">
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+    <form asp-action="Add" asp-controller="Transaction" method="post">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Amount</label>
+                <input type="number" asp-for="Amount" class="form-control" placeholder="0.00" step="0.01" required />
+                <span asp-validation-for="Amount" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Type</label>
+                <select asp-for="Type" class="form-select" required>
+                    <option value="">Select Type</option>
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+                <span asp-validation-for="Type" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Category</label>
+                <select asp-for="Category" class="form-select" required>
+                    <option value="">Select Category</option>
+                    @if (ViewBag.Categories != null)
+                    {
+                        var incomeCategories = ViewBag.Categories as List<string> ?? new List<string>();
+                        var expenseCategories = ViewBag.Categories as List<string> ?? new List<string>();
+                        
+                        <optgroup label="Income">
+                            @foreach (var cat in incomeCategories.Where(c => c.ToLower().Contains("salary") || c.ToLower().Contains("freelance") || c.ToLower().Contains("investment") || c.ToLower().Contains("income")))
+                            {
+                                <option value="@cat">@cat</option>
+                            }
+                        </optgroup>
+                        <optgroup label="Expenses">
+                            @foreach (var cat in expenseCategories.Where(c => !(c.ToLower().Contains("salary") || c.ToLower().Contains("freelance") || c.ToLower().Contains("investment") || c.ToLower().Contains("income"))))
+                            {
+                                <option value="@cat">@cat</option>
+                            }
+                        </optgroup>
+                    }
+                    else
+                    {
+                        <optgroup label="Income">
+                            <option>Salary</option>
+                            <option>Freelance</option>
+                            <option>Investment</option>
+                            <option>Other Income</option>
+                        </optgroup>
+                        <optgroup label="Expenses">
+                            <option>Food & Dining</option>
+                            <option>Transportation</option>
+                            <option>Shopping</option>
+                            <option>Entertainment</option>
+                            <option>Utilities</option>
+                            <option>Healthcare</option>
+                        </optgroup>
+                    }
+                </select>
+                <span asp-validation-for="Category" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Date</label>
+                <input type="date" asp-for="Date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+
+            <div class="col-12 mb-4">
+                <label class="form-label">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="3" placeholder="Add a note..."></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary px-4">Add Transaction</button>
+            <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary px-4 ms-2">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeSelect = document.querySelector('select[name="Type"]');
+            const categorySelect = document.querySelector('select[name="Category"]');
+            
+            function filterCategories() {
+                const selectedType = typeSelect.value.toLowerCase();
+                const options = categorySelect.querySelectorAll('option');
+                const optgroups = categorySelect.querySelectorAll('optgroup');
+                
+                // Hide all optgroups first
+                optgroups.forEach(group => {
+                    group.style.display = 'none';
+                });
+                
+                // Show relevant optgroup based on type
+                if (selectedType === 'income') {
+                    const incomeGroup = categorySelect.querySelector('optgroup[label="Income"]');
+                    if (incomeGroup) {
+                        incomeGroup.style.display = 'block';
+                        // Clear selection and select first income option
+                        categorySelect.value = '';
+                        const firstIncomeOption = incomeGroup.querySelector('option');
+                        if (firstIncomeOption) {
+                            firstIncomeOption.selected = true;
+                        }
+                    }
+                } else if (selectedType === 'expense') {
+                    const expenseGroup = categorySelect.querySelector('optgroup[label="Expenses"]');
+                    if (expenseGroup) {
+                        expenseGroup.style.display = 'block';
+                        // Clear selection and select first expense option
+                        categorySelect.value = '';
+                        const firstExpenseOption = expenseGroup.querySelector('option');
+                        if (firstExpenseOption) {
+                            firstExpenseOption.selected = true;
+                        }
+                    }
+                } else {
+                    // If no type selected, show all
+                    optgroups.forEach(group => {
+                        group.style.display = 'block';
+                    });
+                    categorySelect.value = '';
+                }
+            }
+            
+            // Add event listener to type select
+            typeSelect.addEventListener('change', filterCategories);
+            
+            // Initial filter on page load
+            filterCategories();
+        });
+    </script>
+}
+
+<!-- Fluffy Cat Mascot - Bottom right after sidebar -->
+<img src="/images/fluffy.png" alt="Fluffy Cat Mascot" class="fluffy-mascot" />

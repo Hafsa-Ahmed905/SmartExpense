@@ -1,0 +1,33 @@
+@model FP.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Login Test";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Login Test</h2>
+
+<form method="post">
+    <div class="mb-3">
+        <label asp-for="Email">Email:</label>
+        <input asp-for="Email" type="email" class="form-control" style="background: white; color: black; border: 1px solid black;" />
+        <span asp-validation-for="Email"></span>
+    </div>
+    
+    <div class="mb-3">
+        <label asp-for="Password">Password:</label>
+        <input asp-for="Password" type="password" class="form-control" style="background: white; color: black; border: 1px solid black;" />
+        <span asp-validation-for="Password"></span>
+    </div>
+    
+    <div class="mb-3">
+        <label asp-for="RememberMe">
+            <input asp-for="RememberMe" /> Remember me
+        </label>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Login</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

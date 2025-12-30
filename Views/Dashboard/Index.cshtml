@@ -1,0 +1,160 @@
+﻿@model FP.Models.DashboardViewModel
+@{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    ViewData["Title"] = "Dashboard";
+}
+
+@section Styles {
+    <style>
+        h2 {
+            color: #008080 !important;
+            font-weight: 700;
+        }
+        
+        .btn-link {
+            color: #008080 !important;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .btn-link:hover {
+            color: #006666 !important;
+            text-decoration: underline;
+        }
+        
+        .text-primary {
+            color: #008080 !important;
+        }
+        
+        h6 {
+            color: #008080 !important;
+            font-weight: 600;
+        }
+        
+        .cactus-mascot {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 150px;
+        height: 150px;
+        z-index: 1000;
+        animation: cactusSlideOut 1.5s ease-out forwards;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        transition: transform 0.3s ease;
+    }
+        
+    .cactus-mascot:hover {
+        transform: scale(1.1) rotate(5deg);
+    }
+        
+    @@keyframes cactusSlideOut {
+        0% { 
+            transform: translateX(150px);
+            opacity: 0;
+        }
+        50% { 
+            transform: translateX(50px);
+            opacity: 0.8;
+        }
+        100% { 
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    </style>
+}
+
+<h2>Dashboard</h2>
+<p class="text-muted">Welcome, <strong>@Model.UserName</strong>! Here's your financial summary.</p>
+
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <h6>Total Balance</h6>
+            <h3 class="text-success">$@Model.TotalBalance.ToString("N2")</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <h6>This Month's Expenses</h6>
+            <h3 class="text-danger">$@Model.MonthlyExpenses.ToString("N2")</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <h6>This Month's Income</h6>
+            <h3 class="text-primary">$@Model.MonthlyIncome.ToString("N2")</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <h6>Monthly Budget</h6>
+            <h3 class="text-warning">$@Model.MonthlyBudget.ToString("N2")</h3>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="stat-card">
+            <h6>Recent Transactions</h6>
+            <div class="mt-3">
+                @if (Model.RecentTransactions != null && Model.RecentTransactions.Any())
+                {
+                    @foreach (var t in Model.RecentTransactions)
+                    {
+                        <div class="d-flex justify-content-between border-bottom py-2">
+                            <span>@t.Description</span>
+                            <span class="@(t.Type.ToLower() == "income" ? "text-success" : "text-danger")">
+                                @(t.Type.ToLower() == "income" ? "+" : "-")$@t.Amount.ToString("N2")
+                            </span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted">No recent transactions</p>
+                }
+            </div>
+            <div class="text-end mt-3">
+                <a asp-controller="Transaction" asp-action="List" class="btn-link">View All Transactions →</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="stat-card">
+            <h6>Budget Overview</h6>
+            <div class="mt-3">
+                @if (Model.Budgets != null && Model.Budgets.Any())
+                {
+                    @foreach (var budget in Model.Budgets.Take(5))
+                    {
+                        var percentage = budget.PercentageUsed;
+                        var progressClass = percentage > 100 ? "bg-danger" : (percentage > 75 ? "bg-warning" : "bg-success");
+                        var progressWidth = Math.Min(percentage, 100);
+                        var displayPercentage = Math.Min(percentage, 100);
+                        
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between">
+                                <small>@budget.Category: $@budget.Spent.ToString("N2")/$@budget.Amount.ToString("N2")</small>
+                                <small>@displayPercentage.ToString("N0")%</small>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar @progressClass" style="width: @progressWidth%"></div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted">No budgets set yet</p>
+                }
+            </div>
+            <div class="text-end mt-3">
+                <a asp-controller="Budget" asp-action="Index" class="btn-link">Manage Budgets →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<img src="/images/cactus.png" alt="Cactus Mascot" class="cactus-mascot" />

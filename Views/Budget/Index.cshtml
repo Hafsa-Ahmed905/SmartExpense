@@ -1,0 +1,317 @@
+﻿@model List<FP.Models.Budget>
+
+@{
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    ViewData["Title"] = "Budgets";
+}
+
+<style>
+    /* Cute Dog Mascot */
+    .dog-mascot {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        width: 100px;
+        height: 100px;
+        z-index: 1000;
+        animation: dogSlideIn 1s ease-out, dogWag 2s ease-in-out infinite 1s;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        transition: transform 0.3s ease;
+    }
+    
+    .dog-mascot:hover {
+        transform: scale(1.1) rotate(5deg);
+    }
+    
+    @@keyframes dogSlideIn {
+        0% { 
+            transform: translateX(-200px) translateY(100px) rotate(-15deg);
+            opacity: 0;
+        }
+        100% { 
+            transform: translateX(0) translateY(0) rotate(0deg);
+            opacity: 1;
+        }
+    }
+    
+    @@keyframes dogWag {
+        0%, 100% { transform: rotate(0deg); }
+        25% { transform: rotate(-8deg); }
+        75% { transform: rotate(8deg); }
+    }
+    
+    .flower-image {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        width: 160px;
+        height: 160px;
+        z-index: 1000;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        transition: transform 0.3s ease;
+        object-fit: contain;
+    }
+    
+    .flower-image:hover {
+        transform: scale(1.1);
+    }
+</style>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            showSuccessPopup('@TempData["SuccessMessage"]');
+        });
+        
+        function showSuccessPopup(message) {
+            const popupHtml = '<div class="success-popup" style="position: fixed; top: 80px; right: 20px; background: linear-gradient(135deg, #008080, #20C997); color: white; padding: 16px 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 128, 128, 0.3); z-index: 1060; animation: slideInRight 0.4s ease-out; max-width: 350px; cursor: pointer;">' +
+                '<div style="display: flex; align-items: center;">' +
+                    '<span style="font-size: 20px; margin-right: 12px;">✅</span>' +
+                    '<div>' +
+                        '<div style="font-weight: 600; font-size: 14px; margin-bottom: 2px;">Success!</div>' +
+                        '<div style="font-size: 13px; opacity: 0.9;">' + message + '</div>' +
+                    '</div>' +
+                    '<button onclick="this.parentElement.parentElement.remove()" style="margin-left: auto; background: none; border: none; color: white; font-size: 18px; cursor: pointer; opacity: 0.8;">×</button>' +
+                '</div>' +
+            '</div>' +
+            '<style>' +
+                '@@keyframes slideInRight {' +
+                    'from { transform: translateX(100%); opacity: 0; }' +
+                    'to { transform: translateX(0); opacity: 1; }' +
+                '}' +
+                '.success-popup:hover { transform: scale(1.02); transition: transform 0.2s; }' +
+            '</style>';
+            
+            document.body.insertAdjacentHTML('beforeend', popupHtml);
+            
+            // Auto-remove after 4 seconds
+            setTimeout(function() {
+                const popup = document.querySelector('.success-popup');
+                if (popup) {
+                    popup.style.animation = 'slideInRight 0.3s ease-out reverse';
+                    setTimeout(function() { popup.remove(); }, 300);
+                }
+            }, 4000);
+        }
+    </script>
+}
+
+<style>
+    h2 {
+        color: #008080 !important;
+        font-weight: 700;
+    }
+    
+    h4 {
+        color: #008080 !important;
+        font-weight: 600;
+    }
+    
+    .btn-primary {
+        background-color: #008080 !important;
+        border-color: #008080 !important;
+    }
+    
+    .btn-primary:hover {
+        background-color: #006666 !important;
+        border-color: #006666 !important;
+    }
+    
+    /* MAIN CARD */
+    .card {
+        padding: 2rem;
+        margin-bottom: 2.5rem;
+        border-radius: 16px;
+        border: 1px solid #eaeaea;
+        background-color: #ffffff;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    /* BUDGET ITEM */
+    .budget-item {
+        padding: 1.75rem;
+        margin-bottom: 1.5rem;
+        border-radius: 14px;
+        border: 1px solid #ededed;
+        background-color: #fafafa;
+    }
+
+    /* PROGRESS BAR */
+    .budget-progress {
+        height: 8px;
+        border-radius: 10px;
+        background-color: #e9ecef;
+    }
+
+        .budget-progress .progress-bar {
+            border-radius: 10px;
+        }
+
+    /* SOFT COLORS - Updated to match logo colors */
+    .bg-success {
+        background-color: #FFD700 !important; /* Yellow color from logo */
+    }
+
+    .bg-warning {
+        background-color: #FF6B6B !important; /* Red color from logo */
+    }
+
+    .bg-danger {
+        background-color: #DC143C !important; /* Deep red for over budget */
+    }
+
+    /* BADGE */
+    .badge {
+        font-size: 0.85rem;
+        padding: 0.45em 0.75em;
+        border-radius: 8px;
+    }
+
+    /* TEXT SPACING */
+    .budget-item h5 {
+        margin-bottom: 0.4rem;
+        color: #008080 !important;
+    }
+
+    .budget-item p {
+        margin-bottom: 0;
+        font-size: 0.95rem;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Budget Management</h2>
+</div>
+
+<!-- CURRENT BUDGETS -->
+<div class="card">
+    <h4 class="mb-4">Current Budgets</h4>
+
+    @if (Model != null && Model.Any())
+    {
+        foreach (var budget in Model)
+        {
+            var percentage = budget.PercentageUsed;
+            var badgeClass = percentage > 100 ? "bg-danger"
+            : percentage > 75 ? "bg-warning"
+            : "bg-success";
+
+            var progressClass = badgeClass;
+            var progressWidth = Math.Min(percentage, 100);
+            var displayPercentage = Math.Min(percentage, 100);
+
+            <div class="budget-item">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <h5>@budget.Category</h5>
+                        <p class="text-muted">
+                            Budget: $@budget.Amount.ToString("N2") |
+                            Spent: $@budget.Spent.ToString("N2") |
+                            Remaining: $@budget.Remaining.ToString("N2")
+                        </p>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge @badgeClass">
+                            @displayPercentage.ToString("N0")% used
+                        </span>
+
+                        <form asp-action="Delete" method="post">
+                            <input type="hidden" name="id" value="@budget.Id" />
+                            <button type="submit"
+                                    class="btn btn-outline-danger btn-sm"
+                                    onclick="return showDeleteConfirmation();">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="progress mt-3 budget-progress">
+                    <div class="progress-bar @progressClass"
+                         style="width: @progressWidth%"></div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-muted">No budgets set yet. Add your first budget below!</p>
+    }
+</div>
+
+<!-- SET NEW BUDGET -->
+<div class="card">
+    <h4 class="mb-4">Set Monthly Budget</h4>
+
+    <form asp-action="SaveBudget" method="post">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Category</label>
+                <select class="form-select" name="Category" required>
+                    <option value="">Select Category</option>
+                    <option>Food & Dining</option>
+                    <option>Transportation</option>
+                    <option>Shopping</option>
+                    <option>Entertainment</option>
+                    <option>Utilities</option>
+                    <option>Healthcare</option>
+                </select>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Budget Amount</label>
+                <input type="number"
+                       class="form-control"
+                       name="Amount"
+                       placeholder="0.00"
+                       step="0.01"
+                       required />
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary px-4">
+                    Save Budget
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Custom Confirmation Dialog -->
+<div id="deleteConfirmDialog" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); max-width: 400px; text-align: center;">
+        <h4 style="color: #008080; margin-bottom: 15px;">Confirm Delete</h4>
+        <p style="margin-bottom: 25px; color: #666;">Are you sure you want to delete this budget?</p>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button onclick="cancelDelete()" style="padding: 8px 20px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer;">Cancel</button>
+            <button onclick="confirmDelete()" style="padding: 8px 20px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer;">Yes</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let deleteForm = null;
+    
+    function showDeleteConfirmation() {
+        document.getElementById('deleteConfirmDialog').style.display = 'flex';
+        deleteForm = event.target.form;
+        return false;
+    }
+    
+    function confirmDelete() {
+        document.getElementById('deleteConfirmDialog').style.display = 'none';
+        if (deleteForm) {
+            deleteForm.submit();
+        }
+    }
+    
+    function cancelDelete() {
+        document.getElementById('deleteConfirmDialog').style.display = 'none';
+        deleteForm = null;
+    }
+</script>
+
+<!-- Flower Image - Top Right -->
+<img src="/images/flower.png" alt="Flower" class="flower-image" />

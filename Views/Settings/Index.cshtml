@@ -1,0 +1,168 @@
+﻿@model FP.Models.UserSettings
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Settings";
+    Layout = "_Layout2";
+}
+
+@section Styles {
+    <style>
+        h2 {
+            color: #008080 !important;
+            font-weight: 700;
+        }
+        
+        h5 {
+            color: #008080 !important;
+            font-weight: 600;
+        }
+        
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background-color: #008080 !important;
+            border-color: #008080 !important;
+        }
+        
+        .btn-primary:hover {
+            background-color: #006666 !important;
+            border-color: #006666 !important;
+        }
+        
+        /* Custom teal toggle switches */
+        .form-check-input:checked {
+            background-color: #008080;
+            border-color: #008080;
+        }
+        
+        .form-check-input:focus {
+            border-color: #008080;
+            box-shadow: 0 0 0 0.2rem rgba(0, 128, 128, 0.25);
+        }
+        
+        /* Teal category badges */
+        .badge.bg-primary {
+            background-color: #008080 !important;
+        }
+    </style>
+}
+
+<h2 class="mb-4">Settings</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+
+<!-- PROFILE -->
+<div class="card">
+    <h5>👤 Profile Settings</h5>
+    <form asp-action="UpdateProfile" method="post">
+        <input asp-for="FullName" class="form-control mb-3" placeholder="Full Name" />
+        <input asp-for="Email" class="form-control mb-3" placeholder="Email" />
+        <button class="btn btn-primary">Update Profile</button>
+    </form>
+</div>
+
+<!-- PREFERENCES -->
+<div class="card">
+    <h5>⚙ Preferences & Notifications</h5>
+    <form asp-action="SavePreferences" method="post">
+
+        <label class="form-label">Date Format</label>
+        <select asp-for="DateFormat" class="form-select">
+            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+        </select>
+
+        <div class="form-check form-switch mb-2">
+            <input class="form-check-input" asp-for="EmailNotifications" />
+            <label class="form-check-label">Email notifications</label>
+        </div>
+
+        <div class="form-check form-switch mb-2">
+            <input class="form-check-input" asp-for="WeeklySummary" />
+            <label class="form-check-label">Weekly expense summary</label>
+        </div>
+
+        <div class="form-check form-switch mb-2">
+            <input class="form-check-input" asp-for="ShowBudgetAlerts" />
+            <label class="form-check-label">Show budget warnings</label>
+        </div>
+
+        <div class="form-check form-switch mb-2">
+            <input class="form-check-input" asp-for="DarkMode" id="darkModeSwitch" onchange="toggleDarkMode(this.checked)" />
+            <label class="form-check-label" for="darkModeSwitch">Dark mode</label>
+        </div>
+
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input" asp-for="AutoLogout" />
+            <label class="form-check-label">Auto logout after 30 minutes</label>
+        </div>
+
+        <button class="btn btn-primary">Save Preferences</button>
+    </form>
+</div>
+
+<!-- CATEGORIES -->
+<div class="card">
+    <h5>📂 Manage Categories</h5>
+    <form asp-action="AddCategory" method="post" class="row mb-3">
+        <div class="col-md-8">
+            <input class="form-control" name="newCategory" placeholder="New category" />
+        </div>
+        <div class="col-md-4">
+            <button class="btn btn-primary w-100">Add</button>
+        </div>
+    </form>
+
+    <div>
+        @foreach (var cat in Model.Categories)
+        {
+            <span class="badge bg-primary p-2 me-1">@cat</span>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Load current dark mode state
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            const darkModeSwitch = document.getElementById('darkModeSwitch');
+            if (darkModeSwitch) {
+                darkModeSwitch.checked = darkMode;
+                if (darkMode) {
+                    document.body.classList.add('dark-mode');
+                }
+            }
+        });
+
+        // Toggle dark mode immediately
+        function toggleDarkMode(enabled) {
+            if (enabled) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'true');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'false');
+            }
+        }
+
+        // Apply dark mode on form submit
+        document.querySelector('form[asp-action="SavePreferences"]')?.addEventListener('submit', function(e) {
+            const darkModeSwitch = document.getElementById('darkModeSwitch');
+            if (darkModeSwitch) {
+                localStorage.setItem('darkMode', darkModeSwitch.checked.toString());
+            }
+        });
+    </script>
+}
