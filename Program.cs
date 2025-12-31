@@ -7,7 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Use SQLite with persistent volume path
+// ----------------------
+// Database: SQLite with persistent folder
+// ----------------------
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
@@ -15,11 +17,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+// ----------------------
 // Identity setup
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
+// ----------------------
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+// Configure cookie paths
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LogoutPath = "/Account/Logout";
@@ -27,7 +35,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
+// ----------------------
 // SignalR, MVC, Session
+// ----------------------
 builder.Services.AddSignalR();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -39,7 +49,9 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Repositories and services
+// ----------------------
+// Repositories & services
+// ----------------------
 builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
@@ -48,7 +60,9 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 
 var app = builder.Build();
 
+// ----------------------
 // Initialize database (creates DB automatically)
+// ----------------------
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -56,7 +70,9 @@ using (var scope = app.Services.CreateScope())
     await DbInitializer.InitializeAsync(services, logger);
 }
 
+// ----------------------
 // Middleware pipeline
+// ----------------------
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -75,6 +91,9 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// ----------------------
+// Routes
+// ----------------------
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
@@ -86,4 +105,14 @@ app.MapControllerRoute(
 app.MapHub<NotificationHub>("/notificationHub");
 app.MapRazorPages();
 
+// ----------------------
+// FIX FOR RAILWAY: listen on dynamic port
+// ----------------------
+var port = Environment.GetEnvironmentVariable("PORT") ?? "80";
+app.Urls.Clear();
+app.Urls.Add($"http://*:{port}");
+
+// ----------------------
+// Run the app
+// ----------------------
 app.Run();
