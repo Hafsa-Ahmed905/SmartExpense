@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using FP.Data;
@@ -16,29 +15,8 @@ namespace FP.Data
                 var context = services.GetRequiredService<ApplicationDbContext>();
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
-                // Ensure database is created
-                await context.Database.EnsureCreatedAsync();
-
-                // Check if FirstName and LastName columns exist, add them if they don't
-                try
-                {
-                    // Test if columns exist by trying to query them
-                    var testUser = await context.Users.FirstOrDefaultAsync();
-                    if (testUser != null)
-                    {
-                        // Try to access FirstName property - if it fails, we need to add the column
-                        var firstName = testUser.FirstName;
-                    }
-                }
-                catch
-                {
-                    // Columns don't exist, add them manually
-                    await context.Database.ExecuteSqlRawAsync(
-                        "ALTER TABLE AspNetUsers ADD FirstName NVARCHAR(100) NOT NULL DEFAULT ''");
-                    await context.Database.ExecuteSqlRawAsync(
-                        "ALTER TABLE AspNetUsers ADD LastName NVARCHAR(100) NOT NULL DEFAULT ''");
-                    logger.LogInformation("Added FirstName and LastName columns to AspNetUsers table");
-                }
+                // Apply any pending migrations and create database
+                await context.Database.MigrateAsync();
 
                 // Create default user if none exists
                 if (!await context.Users.AnyAsync())
@@ -51,7 +29,7 @@ namespace FP.Data
                         LastName = "User",
                         EmailConfirmed = true
                     };
-
+                    
                     var result = await userManager.CreateAsync(user, "Test123!");
                     
                     if (result.Succeeded)
@@ -64,6 +42,8 @@ namespace FP.Data
                             string.Join(", ", result.Errors.Select(e => e.Description)));
                     }
                 }
+                
+                logger.LogInformation("Database initialization completed successfully");
             }
             catch (Exception ex)
             {
