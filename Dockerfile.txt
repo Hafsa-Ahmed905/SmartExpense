@@ -18,11 +18,13 @@ WORKDIR /app
 COPY --from=build /app ./
 
 # Make sure SQLite database file can be created
-RUN mkdir -p /app/Data && chmod -R 777 /app/Data
+RUN mkdir -p /data && chmod -R 777 /data
+
 
 # Expose port
 EXPOSE 80
 
 # Start the application
 ENTRYPOINT ["dotnet", "FP.dll"]
+
 
