@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FP.Controllers
 {
     public class HomeController : Controller
     {
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();
@@ -11,23 +13,12 @@ namespace FP.Controllers
 
         public IActionResult About()
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                return View();
-                return RedirectToAction("Index", "DashBoard");
-            }
-
             ViewData["Message"] = "This is SmartExpense - your personal budgeting assistant.";
             return View();
         }
 
         public IActionResult Features()
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Index", "DashBoard");
-            }
-
             var features = new List<string>()
             {
                 "Add & Track Transactions",
@@ -41,11 +32,6 @@ namespace FP.Controllers
 
         public IActionResult Contact(string message = "")
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Index", "DashBoard");
-            }
-
             ViewBag.QueryMessage = message;
             return View();
         }
