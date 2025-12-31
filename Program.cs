@@ -7,12 +7,19 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ----------------------
-// Database: PostgreSQL
-// ----------------------
-var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
-    ?? builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string not found.");
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+// Convert Railway DATABASE_URL format to Npgsql format
+if (!string.IsNullOrEmpty(connectionString) && connectionString.StartsWith("postgres"))
+{
+    var databaseUri = new Uri(connectionString);
+    connectionString = $"Host={databaseUri.Host};Port={databaseUri.Port};Database={databaseUri.LocalPath.TrimStart('/')};Username={databaseUri.UserInfo.Split(':')[0]};Password={databaseUri.UserInfo.Split(':')[1]};SSL Mode=Require;Trust Server Certificate=true";
+}
+else
+{
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? throw new InvalidOperationException("Connection string not found.");
+}
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
@@ -115,3 +122,4 @@ app.Urls.Add($"http://*:{port}");
 // Run the app
 // ----------------------
 app.Run();
+
