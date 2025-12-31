@@ -7,15 +7,16 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Get connection string from Railway or appsettings
+// ----------------------
+// Database: PostgreSQL
+// ----------------------
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
     ?? builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // ----------------------
@@ -88,7 +89,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseSession();
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -98,11 +98,9 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
 app.MapControllerRoute(
     name: "dashboard",
     pattern: "{controller=DashBoard}/{action=Index}/{id?}");
-
 app.MapHub<NotificationHub>("/notificationHub");
 app.MapRazorPages();
 
@@ -117,4 +115,3 @@ app.Urls.Add($"http://*:{port}");
 // Run the app
 // ----------------------
 app.Run();
-
