@@ -7,18 +7,33 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+Console.WriteLine($"DATABASE_URL exists: {!string.IsNullOrEmpty(databaseUrl)}");
 
-// Convert Railway DATABASE_URL format to Npgsql format
-if (!string.IsNullOrEmpty(connectionString) && connectionString.StartsWith("postgres"))
+string connectionString;
+
+if (!string.IsNullOrEmpty(databaseUrl))
 {
-    var databaseUri = new Uri(connectionString);
-    connectionString = $"Host={databaseUri.Host};Port={databaseUri.Port};Database={databaseUri.LocalPath.TrimStart('/')};Username={databaseUri.UserInfo.Split(':')[0]};Password={databaseUri.UserInfo.Split(':')[1]};SSL Mode=Require;Trust Server Certificate=true";
+    try
+    {
+        // Parse Railway's postgres:// URL
+        var uri = new Uri(databaseUrl);
+        var userInfo = uri.UserInfo.Split(':');
+        
+        connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};Ssl Mode=Require;Trust Server Certificate=true";
+        
+        Console.WriteLine($"Converted connection string (password hidden)");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error parsing DATABASE_URL: {ex.Message}");
+        throw;
+    }
 }
 else
 {
     connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? throw new InvalidOperationException("Connection string not found.");
+        ?? throw new InvalidOperationException("DATABASE_URL not found and no DefaultConnection configured.");
 }
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -122,4 +137,5 @@ app.Urls.Add($"http://*:{port}");
 // Run the app
 // ----------------------
 app.Run();
+
 
