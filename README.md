@@ -31,3 +31,24 @@ dotnet run
 ```
 
 Navigate to `https://localhost:5001`
+
+## 📸 Screenshots
+
+### Home Page
+![Home](screenshots/home.png)
+
+### About Page
+![About](screenshots/About.png)
+
+### Login Page
+![Login](screenshots/Login.png)
+
+### DashBoard Page
+![DashBoard](screenshots/DashBoard.png)
+
+### View Transactions Page
+![Home](screenshots/ViewTransaction.png)
+
+### Reports Page
+![Feature](screenshots/Reports.png)
+
